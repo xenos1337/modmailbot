@@ -56,14 +56,12 @@ namespace modmailbot
 					StreamWriter write = new StreamWriter("config.txt");
 					write.Flush();
 					string niggor = Settings.TicketID.ToString();
-					write.WriteLine(niggor);
 					write.Close();
 
 					GuildChannel GLChannel = new GuildChannel();
 					DiscordGuild ourGuild = client.GetGuild(Settings.SupportServerID);
 
 					var ticketCH = ourGuild.CreateChannel($"ticket-{Settings.TicketID}", ChannelType.Text, Settings.TicketCategoryID);
-
 
 					TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
 
