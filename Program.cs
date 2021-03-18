@@ -43,6 +43,24 @@ namespace modmailbot
 
 				if (channeltype == "DM")
 				{
+					int GuildChannels = client.GetGuildChannels(Settings.SupportServerID).Count;
+					for (int i = 0; GuildChannels >= i; i++)
+					{
+						ulong cChannelId = client.GetGuildChannels(Settings.SupportServerID)[i].Id;
+						TextChannel cSelectedChannel = client.GetChannel(cChannelId).ToTextChannel();
+						
+						for(int ia = 0; cSelectedChannel.Client.GetChannelMessages(cChannelId).Count >= ia; ia++)
+                        {
+							if(cSelectedChannel.Client.GetChannelMessages(cChannelId)[ia].ToString().Contains(args.Message.Author.User.Id.ToString())) {
+								string content;
+								if(args.Message.Content != "") content = args.Message.Attachment.Url;
+                                else content = args.Message.Content;
+								cSelectedChannel.SendMessage($"{content}");
+								return;
+                            }
+
+						} 
+					}
 
 					if (args.Message.Author.User.Type.ToString() != "User")
 						return;
@@ -77,10 +95,10 @@ namespace modmailbot
 						$"👤 User\n" +
 						$"<@{args.Message.Author.User.Id}>\n" +
 						$"_({args.Message.Author.User.Id})_\n\n" +
-						$"📄 Reason\n" +
+						$"📄 Message\n" +
 						$"`{desc}`";
 					embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
-					embed.Footer.Text = "Apple Support 2.0";
+					embed.Footer.Text = "Apple Support 2.1";
 					embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
 					tchannel.SendMessage("", false, embed);
 
@@ -98,7 +116,8 @@ namespace modmailbot
 		{
 			try
 			{
-				Console.WriteLine($"Logged in as: {client.User}");
+				Console.WriteLine($"Logged in as: {client.User.Username}#{client.User.Discriminator} | {client.User.Id}");
+				Console.WriteLine($"Guilds: {client.GetGuilds().Count}");
 			}
 			catch (Exception e)
 			{
