@@ -11,6 +11,7 @@ namespace modmailbot
 {
 	class Program
 	{
+		static public string desc;
 
 		static void Main()
 		{
@@ -42,10 +43,15 @@ namespace modmailbot
 
 				if (channeltype == "DM")
 				{
+
+					if (args.Message.Author.User.Type.ToString() != "User")
+						return;
+
 					string[] array = File.ReadAllLines("config.txt");
 					string ticketnummy = string.Join("", array);
 					Settings.TicketID = Convert.ToInt32(ticketnummy);
 					Console.WriteLine(Settings.TicketID);
+					Thread.Sleep(500);
 					Settings.TicketID += 1;
 					StreamWriter write = new StreamWriter("config.txt");
 					write.Flush();
@@ -61,6 +67,11 @@ namespace modmailbot
 
 					TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
 
+					if (args.Message.Content == "")
+						desc = args.Message.Attachment.Url;
+					else
+						desc = args.Message.Content;
+
 					EmbedMaker embed = new EmbedMaker();
 					embed.Color = Color.FromArgb(27, 81, 173);
 					embed.Title = $"Ticket {Settings.TicketID}";
@@ -69,7 +80,7 @@ namespace modmailbot
 						$"<@{args.Message.Author.User.Id}>\n" +
 						$"_({args.Message.Author.User.Id})_\n\n" +
 						$"📄 Reason\n" +
-						$"`{args.Message.Content}`";
+						$"`{desc}`";
 					embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
 					embed.Footer.Text = "Apple Support 2.0";
 					embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
