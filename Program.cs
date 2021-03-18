@@ -33,6 +33,18 @@ namespace modmailbot
 			}
 
 		}
+	
+
+
+		static string checkForAttachment(DiscordSocketClient client, MessageEventArgs args, string str)
+        {
+			if (args.Message.Content == "")
+				str = args.Message.Attachment.Url;
+			else
+				str = args.Message.Content;
+
+			return str;
+		}
 
 		public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
 		{
@@ -43,7 +55,7 @@ namespace modmailbot
 
 				if (channeltype == "DM")
 				{
-					int GuildChannels = client.GetGuildChannels(Settings.SupportServerID).Count;
+					/*int GuildChannels = client.GetGuildChannels(Settings.SupportServerID).Count;
 					for (int i = 0; GuildChannels >= i; i++)
 					{
 						ulong cChannelId = client.GetGuildChannels(Settings.SupportServerID)[i].Id;
@@ -60,7 +72,7 @@ namespace modmailbot
                             }
 
 						} 
-					}
+					}*/
 
 					if (args.Message.Author.User.Type.ToString() != "User")
 						return;
@@ -83,10 +95,7 @@ namespace modmailbot
 
 					TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
 
-					if (args.Message.Content == "")
-						desc = args.Message.Attachment.Url;
-					else
-						desc = args.Message.Content;
+					
 
 					EmbedMaker embed = new EmbedMaker();
 					embed.Color = Color.FromArgb(27, 81, 173);
