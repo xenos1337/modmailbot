@@ -154,7 +154,9 @@ namespace modmailbot
                 }
                 else if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
                 {
-                    if (!args.Message.Content.StartsWith(".") || !args.Message.Content.Equals("!close"))
+                    if (!args.Message.Content.StartsWith("."))
+                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
+                    else if (!args.Message.Content.Equals("!close"))
                         client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
                 }
             }
