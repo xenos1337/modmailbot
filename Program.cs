@@ -155,9 +155,25 @@ namespace modmailbot
                 else if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
                 {
                     if (!args.Message.Content.StartsWith("."))
+                    {
                         client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
-                    else if (!args.Message.Content.Equals("!close"))
-                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
+                    }
+                    else if (args.Message.Content.Contains("!close"))
+                    {
+
+                        EmbedMaker embed = new EmbedMaker();
+                        embed.Color = Color.FromArgb(27, 81, 173);
+                        embed.Title = $"Ticket Closed";
+                        embed.Description =
+                            $"Thank you for contacting Apple Support.\n" +
+                            $"Your ticket has been **CLOSED**\n\n" +
+                            $"__DO NOT__ respond to this unless you wish to reopen a new ticket.\n";
+                        embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
+                        embed.Footer.Text = "Apple Support 2.0";
+                        embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
+
+                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"", false, embed);
+                    }
                 }
             }
             catch (Exception e)

@@ -20,11 +20,11 @@ namespace modmailbot
             {
                 try
                 {
-                    //message.Delete();
+                    message.Delete();
                     TextChannel channel = client.GetChannel(message.Channel.Id).ToTextChannel();
                     TextChannel LogChannel = client.GetChannel(Settings.LogChannelID).ToTextChannel();
                     if (channel.Name.StartsWith("ticket-"))
-                    { 
+                    {
                         channel.Delete();
                         LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                     }
