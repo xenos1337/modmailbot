@@ -14,7 +14,7 @@
 
 
         public static ulong BlacklistChannelID = 822126041631555644;
-        public static ulong LogChannelID =822125921711423519;
+        public static ulong LogChannelID = 822125921711423519;
 
 
         public static ulong ResetRoleID = 822125960421834763;
