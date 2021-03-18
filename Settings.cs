@@ -1,7 +1,30 @@
-﻿namespace modmailbot
+﻿using System;
+using System.Globalization;
+using System.IO;
+
+namespace modmailbot
 {
     internal class Settings
     {
+        public static void Logger(string Content, string LogType)
+        {
+            int error = 0;
+        spawn:
+            try
+            {
+                if (!File.Exists("log"))
+                    File.Create("log");
+                string logtext = File.ReadAllText("log") + $"[{DateTime.Now.ToString(new CultureInfo("de-DE"))}] {LogType}: {Content}";
+                File.WriteAllText("log", logtext);
+            }
+            catch (Exception ex)
+            {
+                error++;
+                if (error == 20) Console.WriteLine(ex);
+                else goto spawn;
+            }
+        }
+
         public static string BotToken = "Bot ODIyMTIzNjY5NzY1MzU3NjQ5.YFNsVQ.PSMCCJQZ55LF5znvK1IF1eyUtH0";
         public static string Prefix = "!";
 

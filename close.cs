@@ -2,6 +2,12 @@
 using Discord.Commands;
 using Discord.Gateway;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace modmailbot
 {
@@ -18,7 +24,7 @@ namespace modmailbot
                     TextChannel channel = client.GetChannel(message.Channel.Id).ToTextChannel();
                     TextChannel LogChannel = client.GetChannel(Settings.LogChannelID).ToTextChannel();
                     if (channel.Name.StartsWith("ticket-"))
-                    {
+                    { 
                         channel.Delete();
                         LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                     }
