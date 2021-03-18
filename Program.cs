@@ -35,67 +35,44 @@ namespace modmailbot
 		}
 	
 
-
-		static string checkForAttachment(DiscordSocketClient client, MessageEventArgs args, string str)
-        {
-			if (args.Message.Content == "")
-				str = args.Message.Attachment.Url;
-			else
-				str = args.Message.Content;
-
-			return str;
-		}
-
 		public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
 		{
 			try
 			{
-				DiscordChannel channel = client.GetChannel(args.Message.Channel.Id);
-				string channeltype = ((PrivateChannel)channel).Type.ToString();
+				DiscordChannel channel1 = client.GetChannel(args.Message.Channel.Id);
+				string channeltype = ((PrivateChannel)channel1).Type.ToString();
 
 				if (channeltype == "DM")
 				{
-					/*int GuildChannels = client.GetGuildChannels(Settings.SupportServerID).Count;
-					for (int i = 0; GuildChannels >= i; i++)
-					{
-						ulong cChannelId = client.GetGuildChannels(Settings.SupportServerID)[i].Id;
-						TextChannel cSelectedChannel = client.GetChannel(cChannelId).ToTextChannel();
-						
-						for(int ia = 0; cSelectedChannel.Client.GetChannelMessages(cChannelId).Count >= ia; ia++)
-                        {
-							if(cSelectedChannel.Client.GetChannelMessages(cChannelId)[ia].ToString().Contains(args.Message.Author.User.Id.ToString())) {
-								string content;
-								if(args.Message.Content != "") content = args.Message.Attachment.Url;
-                                else content = args.Message.Content;
-								cSelectedChannel.SendMessage($"{content}");
-								return;
-                            }
+					string[] array = File.ReadAllLines("config.txt");
+					string ticketnummy = string.Join("", array);
+					Settings.TicketID = Convert.ToInt32(ticketnummy);
+					Settings.TicketID += 1;
+					Thread.Sleep(500);
+					StreamWriter write = new StreamWriter("config.txt");
+					write.Flush();
+					string niggor = Settings.TicketID.ToString();
+					write.WriteLine(niggor);
+					write.Close();
 
-						} 
-					}*/
+
 
 					if (args.Message.Author.User.Type.ToString() != "User")
 						return;
 
-					string[] array = File.ReadAllLines("config.txt");
-					string ticketnummy = string.Join("", array);
-					Settings.TicketID = Convert.ToInt32(ticketnummy);
-					Console.WriteLine(Settings.TicketID);
-					Thread.Sleep(500);
-					Settings.TicketID += 1;
-					StreamWriter write = new StreamWriter("config.txt");
-					write.Flush();
-					string niggor = Settings.TicketID.ToString();
-					write.Close();
 
-					GuildChannel GLChannel = new GuildChannel();
-					DiscordGuild ourGuild = client.GetGuild(Settings.SupportServerID);
+					SocketGuild guild = client.GetCachedGuild(Settings.SupportServerID);
 
-					var ticketCH = ourGuild.CreateChannel($"ticket-{Settings.TicketID}", ChannelType.Text, Settings.TicketCategoryID);
+					var TicketChannel = guild.CreateChannel($"ticket-{Settings.TicketID}", ChannelType.Text, Settings.TicketCategoryID);
 
-					TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
+					TicketChannel.Modify(new TextChannelProperties() { Topic = args.Message.Author.User.Id.ToString() });
 
-					
+					if (args.Message.Content == "")
+						desc = args.Message.Attachment.Url;
+					else
+						desc = args.Message.Content;
+
+
 
 					EmbedMaker embed = new EmbedMaker();
 					embed.Color = Color.FromArgb(27, 81, 173);
@@ -109,8 +86,7 @@ namespace modmailbot
 					embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
 					embed.Footer.Text = "Apple Support 2.1";
 					embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
-					tchannel.SendMessage("", false, embed);
-
+					TicketChannel.ToTextChannel().SendMessage("", false, embed);
 				}
 			}
 			catch (Exception e)
