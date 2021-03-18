@@ -125,18 +125,21 @@ namespace modmailbot
                         CurrentChannel = ourguild.CreateChannel($"ticket-{Settings.TicketID}", ChannelType.Text, Settings.TicketCategoryID);
                         TextChannel gChannel = CurrentChannel.ToTextChannel();
                         gChannel.Modify(new TextChannelProperties() { Topic = args.Message.Author.User.Id.ToString() });
-                        EmbedMaker EMaker = new EmbedMaker()
-                        {
-                            Title = "Ticket " + Settings.TicketID,
-                            Description = "👤 User\n" +
+
+                        EmbedMaker embed = new EmbedMaker();
+                        embed.Color = Color.FromArgb(27, 81, 173);
+                        embed.Title = $"Ticket {Settings.TicketID}";
+                        embed.Description =
+                            $"👤 User\n" +
                             $"<@{args.Message.Author.User.Id}>\n" +
                             $"_({args.Message.Author.User.Id})_\n\n" +
                             $"📄 Reason\n" +
-                            $"`{_MessageContent}`",
-                            Color = System.Drawing.Color.Red
-                        };
+                            $"`{args.Message.Content}`";
+                        embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
+                        embed.Footer.Text = "Apple Support 2.0";
+                        embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
                         //client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"Created Ticket-{Settings.TicketID}, please patiently for a response!");
-                        client.SendMessage(CurrentChannel.Id, "", false, EMaker);
+                        client.SendMessage(CurrentChannel.Id, "", false, embed);
                         Settings.TicketID++;
                     }
                     else
@@ -151,7 +154,8 @@ namespace modmailbot
                 }
                 else if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
                 {
-                    client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
+                    if (!args.Message.Content.StartsWith(".") || !args.Message.Content.Equals("!close"))
+                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
                 }
             }
             catch (Exception e)
@@ -160,93 +164,6 @@ namespace modmailbot
                 Console.WriteLine(e);
             }
         }
-
-        /*SocketGuild guild = client.GetCachedGuild(Settings.SupportServerID);
-
-        string[] arrayyyy = File.ReadAllLines("opentickets.txt");
-        string ticketnummyyyy = string.Join("", arrayyyy);
-
-        if (ticketnummyyyy.Contains(args.Message.Author.User.Id.ToString()))
-        {
-            SocketGuild servor = client.GetCachedGuild(Settings.SupportServerID);
-            foreach (var nigga in servor.GetChannels())
-            {
-                if (nigga.Type.ToString() == "Text")
-                {
-                    if (nigga.Name.StartsWith("ticket"))
-                    {
-                        TextChannel sefsefesfs = client.GetChannel(nigga.Id).ToTextChannel();
-                        foreach (var guierhguiherug in client.GetChannelMessages(sefsefesfs.Id))
-                        {
-                            if (guierhguiherug.Content.Contains(args.Message.Author.User.Id.ToString()))
-                            {
-                                if (guierhguiherug.Author.User.Id == client.User.Id)
-                                {
-                                    StreamWriter write69 = new StreamWriter("opentickets.txt");
-                                    write69.Flush();
-                                    string niggor69 = args.Message.Author.User.Id.ToString();
-                                    write69.WriteLine(niggor69);
-                                    write69.Close();
-                                    TextChannel sefsefeswrgwfs = client.GetChannel(guierhguiherug.Channel.Id).ToTextChannel();
-                                    sefsefeswrgwfs.SendMessage(args.Message.Content);
-                                }
-                                else { }
-                            }
-                            else { }
-                        }
-                    }
-                    else { }
-                }
-                else { }
-            }
-        }
-
-
-
-        string[] array = File.ReadAllLines("config.txt");
-        string ticketnummy = string.Join("", array);
-        Settings.TicketID = Convert.ToInt32(ticketnummy);
-        Settings.TicketID += 1;
-        Thread.Sleep(500);
-        StreamWriter write = new StreamWriter("config.txt");
-        write.Flush();
-        string niggor = Settings.TicketID.ToString();
-        write.WriteLine(niggor);
-        write.Close();
-
-
-
-        if (args.Message.Author.User.Type.ToString() != "User")
-            return;
-
-
-
-
-        var TicketChannel = guild.CreateChannel($"ticket-{Settings.TicketID}", ChannelType.Text, Settings.TicketCategoryID);
-
-        TicketChannel.Modify(new TextChannelProperties() { Topic = args.Message.Author.User.Id.ToString() });
-
-        if (args.Message.Content == "")
-            desc = args.Message.Attachment.Url;
-        else
-            desc = args.Message.Content;
-
-
-
-        EmbedMaker embed = new EmbedMaker();
-        embed.Color = Color.FromArgb(27, 81, 173);
-        embed.Title = $"Ticket {Settings.TicketID}";
-        embed.Description =
-            $"👤 User\n" +
-            $"<@{args.Message.Author.User.Id}>\n" +
-            $"_({args.Message.Author.User.Id})_\n\n" +
-            $"📄 Message\n" +
-            $"`{desc}`";
-        embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
-        embed.Footer.Text = "Apple Support 2.1";
-        embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
-        TicketChannel.ToTextChannel().SendMessage("", false, embed);
-        TicketChannel.ToTextChannel().SendMessage($"{args.Message.Author.User.Id}");*/
 
         private static void Client_OnLoggedIn(DiscordSocketClient client, LoginEventArgs args)
         {
