@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -38,6 +40,44 @@ namespace modmailbot
         }
 
 
+        private static string GetMessage(DiscordSocketClient client, MessageEventArgs args)
+        {
+            string returnstr;
+            if (args.Message.Content == "") returnstr = args.Message.Attachment.ProxyUrl;
+            else returnstr = args.Message.Content;
+            return returnstr;
+        }
+
+
+        public static GuildChannel CheckForExistingTicket(DiscordSocketClient client, MessageEventArgs args)
+        {
+            GuildChannel CurrentChannel = new GuildChannel();
+            List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
+            for (int i = 0; GuildChannels.Count > i; i++)
+            {
+                try
+                {
+
+
+                    if (GuildChannels[i].Type == ChannelType.Category) i++;
+                    TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                    string cTextChannelTopic = cTextChannel.Topic.ToString();
+                    if (cTextChannelTopic.Contains(args.Message.Author.User.Id.ToString()))
+                    {
+                        CurrentChannel = GuildChannels[i];
+                        continue;
+                    }
+                }
+                catch (Exception)
+                {
+                    i++;
+                }
+            }
+            return CurrentChannel;
+        }
+
+
+
         public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
         {
             try
@@ -54,7 +94,7 @@ namespace modmailbot
                     if (File.ReadAllText("config.xenos").Length < 3)
                     {
                         data = parser.ReadFile("config.xenos");
-                        data["Ticker"]["TicketID"] = Settings.TicketID.ToString();
+                        data["Ticket"]["TicketID"] = Settings.TicketID.ToString();
                         parser.WriteFile("config.xenos", data);
                     }
 
@@ -88,14 +128,14 @@ namespace modmailbot
                         EmbedMaker EMaker = new EmbedMaker()
                         {
                             Title = "Ticket " + Settings.TicketID,
-                            Description = "$👤 User\n" +
+                            Description = "👤 User\n" +
                             $"<@{args.Message.Author.User.Id}>\n" +
                             $"_({args.Message.Author.User.Id})_\n\n" +
-                            $"📄 Message\n" +
+                            $"📄 Reason\n" +
                             $"`{_MessageContent}`",
                             Color = System.Drawing.Color.Red
                         };
-                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"Created Ticket-{Settings.TicketID}, please patiently for a response!");
+                        //client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"Created Ticket-{Settings.TicketID}, please patiently for a response!");
                         client.SendMessage(CurrentChannel.Id, "", false, EMaker);
                         Settings.TicketID++;
                     }
@@ -109,9 +149,9 @@ namespace modmailbot
                     parser.WriteFile("config.xenos", data);
 
                 }
-                else
+                else if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
                 {
-                    Console.WriteLine("ChannelType is not a DM");
+                    client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
                 }
             }
             catch (Exception e)
