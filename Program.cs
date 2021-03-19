@@ -152,7 +152,24 @@ namespace modmailbot
                 {
                     if (!args.Message.Content.StartsWith("."))
                     {
-                        client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"{args.Message.Content}");
+                        GuildChannel CurrentChannel = new GuildChannel();
+                        List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
+                        for (int i = 0; GuildChannels.Count > i; i++)
+                        {
+                            try
+                            {
+
+
+                                if (GuildChannels[i].Type == ChannelType.Category) i++;
+                                TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                                ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
+                                client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"{args.Message.Content}");
+                                //CurrentChannel = GuildChannels[i];
+                                //continue;
+                            }
+                            catch (Exception) { i++; }
+                        }
+
                     }
                 }
             }

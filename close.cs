@@ -28,6 +28,7 @@ namespace modmailbot
                     if (channel.Name.StartsWith("ticket-"))
                     {
                         LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
+                        channel.Delete();
                         EmbedMaker embed = new EmbedMaker();
                         embed.Color = Color.FromArgb(27, 81, 173);
                         embed.Title = $"Ticket Closed";
@@ -56,7 +57,6 @@ namespace modmailbot
                             }
                             catch (Exception) { i++; }
                         }
-                        channel.Delete();
 
                     }
                     else { }
