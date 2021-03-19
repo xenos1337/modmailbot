@@ -16,16 +16,21 @@ namespace modmailbot
         [Command("close")]
         public class CloseCommand : ICommand
         {
+            //[Parameter("userID")]
+            //public ulong userID { get; private set; }
+
             public void Execute(DiscordSocketClient client, DiscordMessage message)
             {
                 try
                 {
+
+
                     message.Delete();
                     TextChannel channel = client.GetChannel(message.Channel.Id).ToTextChannel();
                     TextChannel LogChannel = client.GetChannel(Settings.LogChannelID).ToTextChannel();
                     if (channel.Name.StartsWith("ticket-"))
                     {
-                        channel.Delete();
+                        LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                         EmbedMaker embed = new EmbedMaker();
                         embed.Color = Color.FromArgb(27, 81, 173);
                         embed.Title = $"Ticket Closed";
@@ -37,8 +42,25 @@ namespace modmailbot
                         embed.Footer.Text = "Apple Support 2.0";
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
 
-                        client.CreateDM(message.Author.User.Id).ToDMChannel().SendMessage($"", false, embed);
-                        LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
+                        GuildChannel CurrentChannel = new GuildChannel();
+                        List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
+                        for (int i = 0; GuildChannels.Count > i; i++)
+                        {
+                            try
+                            {
+
+
+                                if (GuildChannels[i].Type == ChannelType.Category) i++;
+                                TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                                ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
+                                client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"", false, embed);
+                                //CurrentChannel = GuildChannels[i];
+                                //continue;
+                            }
+                            catch (Exception) { i++; }
+                        }
+                        channel.Delete();
+
                     }
                     else { }
                 }
