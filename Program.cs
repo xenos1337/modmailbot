@@ -15,8 +15,6 @@ namespace modmailbot
 {
     class Program
     {
-        static public DiscordMessage DMMessage;
-
         static void Main()
         {
             try
