@@ -1,31 +1,48 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 
 namespace modmailbot
 {
     internal class Settings
     {
-        public static void Logger(string Content, string LogType)
+        public static void CreateLog(string FileName, string User)
         {
-            int error = 0;
         spawn:
             try
             {
-                if (!File.Exists("log"))
-                    File.Create("log");
-                string logtext = File.ReadAllText("log") + $"[{DateTime.Now.ToString(new CultureInfo("de-DE"))}] {LogType}: {Content}";
-                File.WriteAllText("log", logtext);
+
+                if (!File.Exists(FileName))
+                    File.Create(FileName);
+                string logtext = File.ReadAllText(FileName) + $"Apple Support 2.0\n\nUser: {User}--------------------------------";
+                File.WriteAllText(FileName, logtext);
             }
             catch (Exception ex)
             {
-                error++;
-                if (error == 20) Console.WriteLine(ex);
-                else goto spawn;
+                Console.WriteLine(ex);
+                goto spawn;
             }
         }
 
-        public static string BotToken = "Bot ODIyMTIzNjY5NzY1MzU3NjQ5.YFNsVQ.PSMCCJQZ55LF5znvK1IF1eyUtH0";
+        public static void AddToLog(string FileName, string User, string Content)
+        {
+        spawn:
+            try
+            {
+                if (!File.Exists(FileName))
+                    CreateLog(FileName, User);
+                string logtext = File.ReadAllText(FileName) + $"\n {User}: {Content}";
+                File.WriteAllText(FileName, logtext);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                goto spawn;
+            }
+        }
+
+        public static string BotToken = "Bot ODIyMTIzNjY5NzY1MzU3NjQ5.YFNsVQ.WB2Z9qqGd5q-g-eWKjaidYTJMx0";
         public static string Prefix = "!";
 
 
@@ -33,11 +50,11 @@ namespace modmailbot
         public static ulong SupportServerID = 822123821963280414;
 
 
-        public static ulong TicketCategoryID = 822125911419650058;
+        public static ulong TicketCategoryID = 822563577873170482;
 
 
-        public static ulong BlacklistChannelID = 822126041631555644;
-        public static ulong LogChannelID = 822125921711423519;
+        public static ulong BlacklistChannelID = 822579668632469524;
+        public static ulong LogChannelID = 822579067148304394;
 
 
         public static ulong ResetRoleID = 822125960421834763;

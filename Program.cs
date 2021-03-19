@@ -172,17 +172,31 @@ namespace modmailbot
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
                         client.SendMessage(CurrentChannel.Id, "", false, embed);
 
-                        WebClient WBClient = new WebClient();
-                        byte[] imageData = WBClient.DownloadData(args.Message.Author.User.Avatar.Url);
-                        MemoryStream MemStream = new MemoryStream(imageData);
-                        DiscordImage DCImage = Image.FromStream(MemStream);
-                        var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
-                        CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
-                        foreach (var GetWebhooks in gChannel.GetWebhooks())
+                        try
                         {
-                            GetWebhooks.SendMessage(_MessageContent);
+                            WebClient WBClient = new WebClient();
+                            byte[] imageData = WBClient.DownloadData(args.Message.Author.User.Avatar.Url);
+                            MemoryStream MemStream = new MemoryStream(imageData);
+                            DiscordImage DCImage = Image.FromStream(MemStream);
+                            var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
+                            CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
+                            foreach (var GetWebhooks in gChannel.GetWebhooks())
+                            {
+                                GetWebhooks.SendMessage(_MessageContent);
+                            }
+                            Settings.TicketID++;
                         }
-                        Settings.TicketID++;
+                        catch (System.Net.WebException)
+                        {
+                            DiscordImage DCImage = Image.FromFile(@"E:\Downloads\discord.png");
+                            var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
+                            CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
+                            foreach (var GetWebhooks in gChannel.GetWebhooks())
+                            {
+                                GetWebhooks.SendMessage(_MessageContent);
+                            }
+                            Settings.TicketID++;
+                        }
                     }
                     else
                     {

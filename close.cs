@@ -4,6 +4,8 @@ using Discord.Gateway;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -39,12 +41,39 @@ namespace modmailbot
                             {
                                 if (GuildChannels[i].Name == channel.Name)
                                 {
-                                    channel.Delete();
-                                    LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                                     if (GuildChannels[i].Type == ChannelType.Category) i++;
                                     TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                                     ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
                                     client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"", false, embed);
+                                    string fileName = $"Logs\\{channel.Name}.txt";
+                                    FileStream fs = File.Create(fileName);
+                                    fs.Close();
+                                    StreamWriter write69 = new StreamWriter($"Logs\\{channel.Name}.txt");
+                                    write69.WriteLine("Apple Support 2.0");
+                                    write69.WriteLine("");
+                                    write69.WriteLine($"User: {cTextChannelTopic}");
+                                    write69.WriteLine($"Date: {DateTime.Now.ToString(new CultureInfo("de-DE"))}");
+                                    write69.WriteLine("--------------------------------");
+                                    write69.WriteLine("");
+                                    try
+                                    {
+                                        foreach (var guierhguiherug in client.GetChannelMessages(message.Channel.Id))
+                                        {
+                                            string niggor69 = guierhguiherug.Author.User.Username.ToString() + ": " + guierhguiherug.Content + $"( {DateTime.Now.Hour.ToString(new CultureInfo("de-DE"))}.{DateTime.Now.Minute.ToString(new CultureInfo("de-DE"))}.{DateTime.Now.Second.ToString(new CultureInfo("de-DE"))} )";
+                                            write69.WriteLine(niggor69);
+                                        }
+                                    }
+                                    catch (InvalidOperationException)
+                                    {
+                                        write69.WriteLine("This ticket contained no text");
+                                    }
+                                    write69.WriteLine("");
+                                    write69.WriteLine("--------------------------------");
+                                    write69.WriteLine($"Staff Closed: {message.Author.User.Username} ({message.Author.User.Id})");
+                                    write69.WriteLine($"Time: {DateTime.Now.ToString(new CultureInfo("de-DE"))}");
+                                    write69.Close();
+                                    channel.Delete();
+                                    LogChannel.SendFile($"Logs\\{channel.Name}.txt", $"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                                 }
                             }
                             catch (Exception) { i++; }
