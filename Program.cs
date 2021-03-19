@@ -12,7 +12,7 @@ namespace modmailbot
 {
     class Program
     {
-        static public string desc;
+        static public DiscordMessage DMMessage;
 
         static void Main()
         {
@@ -22,6 +22,7 @@ namespace modmailbot
                 DiscordSocketClient client = new DiscordSocketClient();
                 client.OnLoggedIn += Client_OnLoggedIn;
                 client.OnMessageReceived += Client_OnMessageReceived;
+                client.OnMessageEdited += Client_OnMessageEdited;
                 client.CreateCommandHandler(Settings.Prefix);
                 client.Login(Settings.BotToken);
                 Thread.Sleep(-1);
@@ -73,6 +74,45 @@ namespace modmailbot
         }
 
 
+
+        public static void Client_OnMessageEdited(DiscordSocketClient client, MessageEventArgs args)
+        {
+            try
+            {
+                DiscordChannel channel1 = client.GetChannel(args.Message.Channel.Id);
+                string channeltype = channel1.Type.ToString();
+
+                if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
+                {
+                    if (!args.Message.Content.StartsWith("."))
+                    {
+                        GuildChannel CurrentChannel = new GuildChannel();
+                        List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
+                        for (int i = 0; GuildChannels.Count > i; i++)
+                        {
+                            try
+                            {
+
+
+                                if (GuildChannels[i].Type == ChannelType.Category) i++;
+                                TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                                ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
+                                client.EditMessage(cTextChannelTopic, DMMessage.Id, $"{args.Message.Content}");
+                                //CurrentChannel = GuildChannels[i];
+                                //continue;
+                            }
+                            catch (Exception) { i++; }
+                        }
+
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e);
+            }
+        }
 
         public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
         {
@@ -163,7 +203,7 @@ namespace modmailbot
                                 if (GuildChannels[i].Type == ChannelType.Category) i++;
                                 TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                                 ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
-                                client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"{args.Message.Content}");
+                                DMMessage = client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"{args.Message.Content}");
                                 //CurrentChannel = GuildChannels[i];
                                 //continue;
                             }
