@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 
 namespace modmailbot
@@ -170,8 +171,13 @@ namespace modmailbot
                         embed.Footer.Text = $"Apple Support 2.0 • {args.Message.SentAt}";
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
                         client.SendMessage(CurrentChannel.Id, "", false, embed);
-                        DiscordImage ProfilePicture = args.Message.Author.User.Avatar.Download();
-                        var niggito = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username, Avatar = ProfilePicture });
+
+                        WebClient WBClient = new WebClient();
+                        byte[] imageData = WBClient.DownloadData(args.Message.Author.User.Avatar.Url);
+                        MemoryStream MemStream = new MemoryStream(imageData);
+                        DiscordImage DCImage = Image.FromStream(MemStream);
+                        var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
+                        CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
                         foreach (var GetWebhooks in gChannel.GetWebhooks())
                         {
                             GetWebhooks.SendMessage(_MessageContent);
@@ -186,7 +192,6 @@ namespace modmailbot
                         {
                             GetWebhooks.SendMessage(_MessageContent);
                         }
-                        //client.SendMessage(CurrentChannel.Id, $"**{args.Message.Author.User.Username}#{args.Message.Author.User.Discriminator}**: {_MessageContent}", false);
                     }
 
 

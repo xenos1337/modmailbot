@@ -43,12 +43,12 @@ namespace modmailbot
                                     TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                                     ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
                                     client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"", false, embed);
+                                    channel.Delete();
+                                    LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                                 }
                             }
                             catch (Exception) { i++; }
                         }
-                        LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
-                        channel.Delete();
 
                     }
                 }
