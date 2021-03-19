@@ -43,7 +43,6 @@ namespace modmailbot
         {
             string returnstr;
             if (args.Message.Content == "") returnstr = args.Message.Attachment.Url;
-            else if (args.Message.MentionedEveryone == true) returnstr = "@ _ _ everyone";
             else returnstr = args.Message.Content;
             return returnstr;
         }
@@ -168,12 +167,11 @@ namespace modmailbot
                             $"📄 Reason\n" +
                             $"`{_MessageContent}`";
                         embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
-                        embed.Footer.Text = "Apple Support 2.0";
+                        embed.Footer.Text = $"Apple Support 2.0 • {args.Message.SentAt}";
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
                         client.SendMessage(CurrentChannel.Id, "", false, embed);
-                        string DiscordWebhookProperties = "{\"name\":\"" + args.Message.Author.User.Username + "\"}";
-                        var JsonConvertDO = JsonConvert.DeserializeObject<DiscordWebhookProperties>(DiscordWebhookProperties);
-                        var niggito = gChannel.CreateWebhook(JsonConvertDO);
+                        DiscordImage ProfilePicture = args.Message.Author.User.Avatar.Download();
+                        var niggito = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username, Avatar = ProfilePicture });
                         foreach (var GetWebhooks in gChannel.GetWebhooks())
                         {
                             GetWebhooks.SendMessage(_MessageContent);
