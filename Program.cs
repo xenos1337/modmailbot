@@ -43,6 +43,7 @@ namespace modmailbot
         {
             string returnstr;
             if (args.Message.Content == "") returnstr = args.Message.Attachment.Url;
+            else if (args.Message.MentionedEveryone == true) returnstr = "@ _ _ everyone";
             else returnstr = args.Message.Content;
             return returnstr;
         }
@@ -183,9 +184,9 @@ namespace modmailbot
                     {
 
                         TextChannel gChannel = CurrentChannel.ToTextChannel();
-                        foreach (var chigga in gChannel.GetWebhooks())
+                        foreach (var GetWebhooks in gChannel.GetWebhooks())
                         {
-                            chigga.SendMessage(_MessageContent);
+                            GetWebhooks.SendMessage(_MessageContent);
                         }
                         //client.SendMessage(CurrentChannel.Id, $"**{args.Message.Author.User.Username}#{args.Message.Author.User.Discriminator}**: {_MessageContent}", false);
                     }
