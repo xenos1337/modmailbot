@@ -48,6 +48,6 @@ namespace modmailbot
 
 
         public static string WelcomeMessage = "u made ticket";
-        public static string CloseMessage = "some1 closed u ticket";
+        public static string CloseMessage = "Thank you for contacting Apple Support.\nYour ticket has been **CLOSED**\n\n__DO NOT__ respond to this unless you wish to reopen a new ticket.\n";
     }
 }

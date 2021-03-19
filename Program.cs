@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Gateway;
+using Discord.Webhook;
 using IniParser;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -40,7 +42,7 @@ namespace modmailbot
         private static string GetMessage(DiscordSocketClient client, MessageEventArgs args)
         {
             string returnstr;
-            if (args.Message.Content == "") returnstr = args.Message.Attachment.ProxyUrl;
+            if (args.Message.Content == "") returnstr = args.Message.Attachment.Url;
             else returnstr = args.Message.Content;
             return returnstr;
         }
@@ -54,8 +56,6 @@ namespace modmailbot
             {
                 try
                 {
-
-
                     if (GuildChannels[i].Type == ChannelType.Category) i++;
                     TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                     string cTextChannelTopic = cTextChannel.Topic.ToString();
@@ -73,38 +73,32 @@ namespace modmailbot
             return CurrentChannel;
         }
 
-
-
         public static void Client_OnMessageEdited(DiscordSocketClient client, MessageEventArgs args)
         {
             try
             {
                 DiscordChannel channel1 = client.GetChannel(args.Message.Channel.Id);
-                string channeltype = channel1.Type.ToString();
 
-                if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
+                GuildChannel CurrentChannel = new GuildChannel();
+                List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
+                for (int i = 0; GuildChannels.Count > i; i++)
                 {
-                    if (!args.Message.Content.StartsWith("."))
+                    try
                     {
-                        GuildChannel CurrentChannel = new GuildChannel();
-                        List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
-                        for (int i = 0; GuildChannels.Count > i; i++)
-                        {
-                            try
-                            {
 
-
-                                if (GuildChannels[i].Type == ChannelType.Category) i++;
-                                TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
-                                ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
-                                client.EditMessage(cTextChannelTopic, DMMessage.Id, $"{args.Message.Content}");
-                                //CurrentChannel = GuildChannels[i];
-                                //continue;
-                            }
-                            catch (Exception) { i++; }
-                        }
-
+                        if (GuildChannels[i].Type == ChannelType.Category) i++;
+                        TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                        ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
+                        PrivateChannel chanol = client.CreateDM(cTextChannelTopic).ToDMChannel();
+                        client.EditMessage(chanol, DMMessage.Id, args.Message.Content);
+                        Console.WriteLine(chanol);
+                        Console.WriteLine(DMMessage.Id);
+                        Console.WriteLine(args.Message.Content);
+                        Console.WriteLine(cTextChannelTopic);
+                        //CurrentChannel = GuildChannels[i];
+                        //continue;
                     }
+                    catch (Exception) { i++; }
                 }
             }
             catch (Exception e)
@@ -121,8 +115,9 @@ namespace modmailbot
                 DiscordChannel channel1 = client.GetChannel(args.Message.Channel.Id);
                 string channeltype = channel1.Type.ToString();
 
-                if (channeltype == "DM" && args.Message.Author.User.Type != DiscordUserType.Bot)
+                if (channeltype == "DM" && args.Message.Author.User.Type != DiscordUserType.Bot && args.Message.Author.User.Type != DiscordUserType.Webhook)
                 {
+
                     var parser = new FileIniDataParser();
                     IniParser.Model.IniData data = null;
 
@@ -170,17 +165,29 @@ namespace modmailbot
                             $"<@{args.Message.Author.User.Id}>\n" +
                             $"_({args.Message.Author.User.Id})_\n\n" +
                             $"📄 Reason\n" +
-                            $"`{args.Message.Content}`";
+                            $"`{_MessageContent}`";
                         embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
                         embed.Footer.Text = "Apple Support 2.0";
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
-                        //client.CreateDM(args.Message.Author.User.Id).ToDMChannel().SendMessage($"Created Ticket-{Settings.TicketID}, please patiently for a response!");
                         client.SendMessage(CurrentChannel.Id, "", false, embed);
+                        string DiscordWebhookProperties = "{\"name\":\"" + args.Message.Author.User.Username + "\"}";
+                        var JsonConvertDO = JsonConvert.DeserializeObject<DiscordWebhookProperties>(DiscordWebhookProperties);
+                        var niggito = gChannel.CreateWebhook(JsonConvertDO);
+                        foreach (var GetWebhooks in gChannel.GetWebhooks())
+                        {
+                            GetWebhooks.SendMessage(_MessageContent);
+                        }
                         Settings.TicketID++;
                     }
                     else
                     {
-                        client.SendMessage(CurrentChannel.Id, $"**{args.Message.Author.User.Username}#{args.Message.Author.User.Discriminator}**: {args.Message.Content}", false);
+
+                        TextChannel gChannel = CurrentChannel.ToTextChannel();
+                        foreach (var chigga in gChannel.GetWebhooks())
+                        {
+                            chigga.SendMessage(_MessageContent);
+                        }
+                        //client.SendMessage(CurrentChannel.Id, $"**{args.Message.Author.User.Username}#{args.Message.Author.User.Discriminator}**: {_MessageContent}", false);
                     }
 
 
@@ -188,9 +195,11 @@ namespace modmailbot
                     parser.WriteFile("config.xenos", data);
 
                 }
-                else if (args.Message.Author.User.Type != DiscordUserType.Bot && channel1.Name.StartsWith("ticket-"))
+                else if (args.Message.Author.User.Type != DiscordUserType.Bot && args.Message.Author.User.Type != DiscordUserType.Webhook && channel1.Name.StartsWith("ticket-"))
                 {
-                    if (!args.Message.Content.StartsWith("."))
+                    string _MessageContent = GetMessage(client, args);
+
+                    if (!args.Message.Content.StartsWith(".") && !args.Message.Content.Contains("!close"))
                     {
                         GuildChannel CurrentChannel = new GuildChannel();
                         List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
@@ -199,11 +208,14 @@ namespace modmailbot
                             try
                             {
 
+                                if (GuildChannels[i].Name == channel1.Name)
+                                {
 
-                                if (GuildChannels[i].Type == ChannelType.Category) i++;
-                                TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
-                                ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
-                                DMMessage = client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"{args.Message.Content}");
+                                    if (GuildChannels[i].Type == ChannelType.Category) i++;
+                                    TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
+                                    ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
+                                    client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"{_MessageContent}");
+                                }
                                 //CurrentChannel = GuildChannels[i];
                                 //continue;
                             }
@@ -224,6 +236,8 @@ namespace modmailbot
         {
             try
             {
+                //client.DeleteMessage(259853201359110144, 822270036089110529);
+                //client.EditMessage(259853201359110144, 822270036089110529, "same");
                 Console.WriteLine($"Logged in as: {client.User.Username}#{client.User.Discriminator} | {client.User.Id}");
                 Console.WriteLine($"Guilds: {client.GetGuilds().Count}");
             }
