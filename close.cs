@@ -39,12 +39,12 @@ namespace modmailbot
                             {
                                 if (GuildChannels[i].Name == channel.Name)
                                 {
+                                    channel.Delete();
+                                    LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                                     if (GuildChannels[i].Type == ChannelType.Category) i++;
                                     TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                                     ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
                                     client.CreateDM(cTextChannelTopic).ToDMChannel().SendMessage($"", false, embed);
-                                    channel.Delete();
-                                    LogChannel.SendMessage($"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
                                 }
                             }
                             catch (Exception) { i++; }
