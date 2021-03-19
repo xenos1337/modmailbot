@@ -1,16 +1,12 @@
-﻿using System;
+﻿using Discord;
+using Discord.Gateway;
+using IniParser;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
-using Discord;
-using Discord.Gateway;
-using IniParser;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace modmailbot
 {
