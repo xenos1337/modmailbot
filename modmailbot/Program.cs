@@ -49,7 +49,7 @@ namespace modmailbot
 				embed.Color = Color.FromArgb(52, 255, 33);
 				embed.Title = $"Ticket {currentticketid}";
 				embed.Description = 
-					$"👤 User\n" +
+					$"👤 User\n" + 
 					$"<@{args.Message.Author.User.Id}>\n" +
 					$"_({args.Message.Author.User.Id})_\n\n" +
 					$"📄 Reason\n" +
