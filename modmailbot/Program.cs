@@ -7,29 +7,28 @@ using Discord.Gateway;
 namespace modmailbot
 {
     class Program
-	{
+    {
 
 		
-		static void Main()
+	static void Main()
         {
-			try
-			{
-				Discord.DiscordConfig config = new Discord.DiscordConfig();
-				DiscordSocketClient client = new DiscordSocketClient();
-				client.OnLoggedIn += Client_OnLoggedIn;
-				client.OnMessageReceived += Client_OnMessageReceived;
-				client.CreateCommandHandler(Settings.Prefix);
-				client.Login(Settings.BotToken);
-				Thread.Sleep(-1);
-			}
-			catch (Exception e)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(e);
-				Console.ReadLine();
-			}
-
+		try
+		{
+			Discord.DiscordConfig config = new Discord.DiscordConfig();
+			DiscordSocketClient client = new DiscordSocketClient();
+			client.OnLoggedIn += Client_OnLoggedIn;
+			client.OnMessageReceived += Client_OnMessageReceived;
+			client.CreateCommandHandler(Settings.Prefix);
+			client.Login(Settings.BotToken);
+			Thread.Sleep(-1);
 		}
+		catch (Exception e)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(e);
+			Console.ReadLine();
+		}
+	}
 
 		public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
 		{
