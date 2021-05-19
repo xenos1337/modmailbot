@@ -79,7 +79,7 @@ namespace modmailbot
 			Console.ForegroundColor = ConsoleColor.Red;
 			Console.WriteLine(e);
 			Console.ReadLine();
-		}
-	}
+               }
+        }
     }
 }
