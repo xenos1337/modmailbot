@@ -8,8 +8,6 @@ namespace modmailbot
 {
     class Program
     {
-
-		
 	static void Main()
         {
 		try
@@ -30,58 +28,58 @@ namespace modmailbot
 		}
 	}
 
-		public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
+	public static void Client_OnMessageReceived(DiscordSocketClient client, MessageEventArgs args)
+	{
+		int currentticketid = 1;
+
+		try
 		{
-			int currentticketid = 1;
+			DiscordChannel channel = client.GetChannel(args.Message.Channel.Id);
+			string channeltype = ((PrivateChannel)channel).Type.ToString();
 
-			try
-			{
-				DiscordChannel channel = client.GetChannel(args.Message.Channel.Id);
-				string channeltype = ((PrivateChannel)channel).Type.ToString();
+			if (channeltype == "DM")
+                	{
+				GuildChannel GLChannel = new GuildChannel();
+				DiscordGuild ourGuild = client.GetGuild(Settings.SupportServerID);
+				var ticketCH = ourGuild.CreateChannel($"ticket-{currentticketid}", ChannelType.Text, Settings.TicketCategoryID);
 
-				if (channeltype == "DM")
-                {
-					GuildChannel GLChannel = new GuildChannel();
-					DiscordGuild ourGuild = client.GetGuild(Settings.SupportServerID);
-					var ticketCH = ourGuild.CreateChannel($"ticket-{currentticketid}", ChannelType.Text, Settings.TicketCategoryID);
+				TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
 
-					TextChannel tchannel = client.GetChannel(ticketCH.Id).ToTextChannel();
+				EmbedMaker embed = new EmbedMaker();
+				embed.Color = Color.FromArgb(52, 255, 33);
+				embed.Title = $"Ticket {currentticketid}";
+				embed.Description = 
+					$"👤 User\n" +
+					$"<@{args.Message.Author.User.Id}>\n" +
+					$"_({args.Message.Author.User.Id})_\n\n" +
+					$"📄 Reason\n" +
+					$"`{args.Message.Content}`";
+				tchannel.SendMessage("", false, embed);
 
-					EmbedMaker embed = new EmbedMaker();
-					embed.Color = Color.FromArgb(52, 255, 33);
-					embed.Title = $"Ticket {currentticketid}";
-					embed.Description = 
-						$"👤 User\n" +
-						$"<@{args.Message.Author.User.Id}>\n" +
-						$"_({args.Message.Author.User.Id})_\n\n" +
-						$"📄 Reason\n" +
-						$"`{args.Message.Content}`";
-					tchannel.SendMessage("", false, embed);
-
-					parser.DeleteSetting("modmailbot", "TicketID");
-				}
-			}
-			catch (Exception e)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(e);
-				Console.ReadLine();
+				parser.DeleteSetting("modmailbot", "TicketID");
 			}
 		}
-
-
-		private static void Client_OnLoggedIn(DiscordSocketClient client, LoginEventArgs args)
-        {
-			try
-			{
-				Console.WriteLine($"Logged in as: {client.User}");
-			}
-			catch (Exception e)
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(e);
-				Console.ReadLine();
-			}
+		catch (Exception e)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(e);
+			Console.ReadLine();
 		}
 	}
+
+
+	private static void Client_OnLoggedIn(DiscordSocketClient client, LoginEventArgs args)
+        {
+		try
+		{
+			Console.WriteLine($"Logged in as: {client.User}");
+		}
+		catch (Exception e)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine(e);
+			Console.ReadLine();
+		}
+	}
+    }
 }
