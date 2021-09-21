@@ -20,7 +20,7 @@ namespace modmailbot
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 goto spawn;
             }
         }
@@ -37,15 +37,16 @@ namespace modmailbot
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 goto spawn;
             }
         }
 
-        public static string BotToken = "Bot ODIyMTIzNjY5NzY1MzU3NjQ5.YFNsVQ.WB2Z9qqGd5q-g-eWKjaidYTJMx0";
+        public static string BotToken = "Bot ODk1NDEyOTQx..."; 
         public static string Prefix = "!";
 
 
+        // all of this isn't implemented yet i think
         public static ulong MainServerID = 822123785200074792;
         public static ulong SupportServerID = 822123821963280414;
 
