@@ -52,13 +52,14 @@ namespace modmailbot
                                     write69.WriteLine("Apple Support 2.0");
                                     write69.WriteLine("");
                                     write69.WriteLine($"User: {cTextChannelTopic}");
+                                    write69.WriteLine($"Date: {DateTime.Now.ToString(new CultureInfo("de-DE"))}");
                                     write69.WriteLine("--------------------------------");
                                     write69.WriteLine("");
                                     try
                                     {
                                         foreach (var guierhguiherug in client.GetChannelMessages(message.Channel.Id))
                                         {
-                                            string niggor69 = guierhguiherug.Author.User.Username.ToString() + ": " + guierhguiherug.Content;
+                                            string niggor69 = guierhguiherug.Author.User.Username.ToString() + ": " + guierhguiherug.Content + $"( {DateTime.Now.Hour.ToString(new CultureInfo("de-DE"))}.{DateTime.Now.Minute.ToString(new CultureInfo("de-DE"))}.{DateTime.Now.Second.ToString(new CultureInfo("de-DE"))} )";
                                             write69.WriteLine(niggor69);
                                         }
                                     }

@@ -15,12 +15,14 @@ namespace modmailbot
 {
     class Program
     {
+        static public DiscordMessage DMMessage;
+
         static void Main()
         {
             try
             {
                 Discord.DiscordConfig config = new Discord.DiscordConfig();
-                DiscordSocketClient client = new DiscordSocketClient();
+                DiscordSocketClient client = new DiscordSocketClient(new DiscordSocketConfig { Cache = true, RetryOnRateLimit = true, Intents = DiscordGatewayIntent.DirectMessages | DiscordGatewayIntent.GuildWebhooks | DiscordGatewayIntent.Guilds | DiscordGatewayIntent.GuildMessages, ApiBaseUrl = "https://discord.com/api/v9" } );
                 client.OnLoggedIn += Client_OnLoggedIn;
                 client.OnMessageReceived += Client_OnMessageReceived;
                 client.OnMessageEdited += Client_OnMessageEdited;
@@ -172,17 +174,30 @@ namespace modmailbot
 
                         try
                         {
+                            Console.WriteLine("failed 1");
                             WebClient WBClient = new WebClient();
+                            Console.WriteLine("failed 2");
                             byte[] imageData = WBClient.DownloadData(args.Message.Author.User.Avatar.Url);
+                            Console.WriteLine("failed 3");
                             MemoryStream MemStream = new MemoryStream(imageData);
+                            Console.WriteLine("failed 4");
                             DiscordImage DCImage = Image.FromStream(MemStream);
+                            Console.WriteLine("failed 5");
+                            gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
+                            Console.WriteLine("failed 5.1");
                             var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
+                            Console.WriteLine("failed 6");
                             CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
+                            Console.WriteLine("failed 7");
                             foreach (var GetWebhooks in gChannel.GetWebhooks())
                             {
+                                Console.WriteLine("failed 8");
                                 GetWebhooks.SendMessage(_MessageContent);
+                                Console.WriteLine("failed 9");
                             }
+                            Console.WriteLine("failed 10");
                             Settings.TicketID++;
+                            Console.WriteLine("failed 11");
                         }
                         catch (System.Net.WebException)
                         {
@@ -194,6 +209,7 @@ namespace modmailbot
                                 GetWebhooks.SendMessage(_MessageContent);
                             }
                             Settings.TicketID++;
+                            Console.WriteLine("failed 199");
                         }
                     }
                     else
