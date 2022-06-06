@@ -36,9 +36,7 @@ namespace modmailbot
                 Console.WriteLine(e);
                 Console.ReadLine();
             }
-
         }
-
 
         private static string GetMessage(DiscordSocketClient client, MessageEventArgs args)
         {
@@ -47,7 +45,6 @@ namespace modmailbot
             else returnstr = args.Message.Content;
             return returnstr;
         }
-
 
         public static GuildChannel CheckForExistingTicket(DiscordSocketClient client, MessageEventArgs args)
         {
@@ -79,7 +76,6 @@ namespace modmailbot
             try
             {
                 DiscordChannel channel1 = client.GetChannel(args.Message.Channel.Id);
-
                 GuildChannel CurrentChannel = new GuildChannel();
                 List<Discord.GuildChannel> GuildChannels = client.GetGuildChannels(Settings.SupportServerID).ToList();
                 for (int i = 0; GuildChannels.Count > i; i++)
@@ -118,27 +114,26 @@ namespace modmailbot
 
                 if (channeltype == "DM" && args.Message.Author.User.Type != DiscordUserType.Bot && args.Message.Author.User.Type != DiscordUserType.Webhook)
                 {
-
                     var parser = new FileIniDataParser();
                     IniParser.Model.IniData data = null;
 
-                    if (!File.Exists("config.xenos")) File.Create("config.xenos");
-                    if (File.ReadAllText("config.xenos").Length < 3)
+                    if (!File.Exists("config.ini")) File.Create("config.ini");
+                    if (File.ReadAllText("config.ini").Length < 3)
                     {
-                        data = parser.ReadFile("config.xenos");
+                        data = parser.ReadFile("config.ini");
                         data["Ticket"]["TicketID"] = Settings.TicketID.ToString();
-                        parser.WriteFile("config.xenos", data);
+                        parser.WriteFile("config.ini", data);
                     }
 
                     try
                     {
-                        data = parser.ReadFile("config.xenos");
+                        data = parser.ReadFile("config.ini");
                     }
                     catch (Exception)
                     {
-                        data = parser.ReadFile("config.xenos");
+                        data = parser.ReadFile("config.ini");
                         data["Ticket"]["TickerID"] = Settings.TicketID.ToString();
-                        parser.WriteFile("config.xenos", data);
+                        parser.WriteFile("config.ini", data);
                     }
 
                     Settings.TicketID = Int32.Parse(data["Ticket"]["TicketID"]);
@@ -168,7 +163,7 @@ namespace modmailbot
                             $"📄 Reason\n" +
                             $"`{_MessageContent}`";
                         embed.ThumbnailUrl = "https://i.imgur.com/RT1TEDh.png";
-                        embed.Footer.Text = $"Apple Support 2.0 • {args.Message.SentAt}";
+                        embed.Footer.Text = $"Apple Support 2.0 • {args.Message.SentAt}"; // idk why i made it to bad it's very old
                         embed.Footer.IconUrl = "https://cdn.discordapp.com/avatars/780516738948268053/e196254270adbfac834d794c11f847ef.webp";
                         client.SendMessage(CurrentChannel.Id, "", false, embed);
 
@@ -201,7 +196,7 @@ namespace modmailbot
                         }
                         catch (System.Net.WebException)
                         {
-                            DiscordImage DCImage = Image.FromFile(@"E:\Downloads\discord.png");
+                            DiscordImage DCImage = Image.FromFile(@"E:\Downloads\discord.png"); // if you wanna update this have fun https://cdn.discordapp.com/attachments/834342154993926187/889918069625999470/discord.png
                             var CWebhook = gChannel.CreateWebhook(new DiscordWebhookProperties() { Name = args.Message.Author.User.Username });
                             CWebhook.Modify(new DiscordWebhookProperties() { Avatar = DCImage });
                             foreach (var GetWebhooks in gChannel.GetWebhooks())
@@ -214,7 +209,6 @@ namespace modmailbot
                     }
                     else
                     {
-
                         TextChannel gChannel = CurrentChannel.ToTextChannel();
                         foreach (var GetWebhooks in gChannel.GetWebhooks())
                         {
@@ -222,10 +216,8 @@ namespace modmailbot
                         }
                     }
 
-
                     data["Ticket"]["TicketID"] = Settings.TicketID.ToString();
                     parser.WriteFile("config.xenos", data);
-
                 }
                 else if (args.Message.Author.User.Type != DiscordUserType.Bot && args.Message.Author.User.Type != DiscordUserType.Webhook && channel1.Name.StartsWith("ticket-"))
                 {
@@ -239,10 +231,8 @@ namespace modmailbot
                         {
                             try
                             {
-
                                 if (GuildChannels[i].Name == channel1.Name)
                                 {
-
                                     if (GuildChannels[i].Type == ChannelType.Category) i++;
                                     TextChannel cTextChannel = GuildChannels[i].ToTextChannel();
                                     ulong cTextChannelTopic = ulong.Parse(cTextChannel.Topic);
@@ -268,8 +258,6 @@ namespace modmailbot
         {
             try
             {
-                //client.DeleteMessage(259853201359110144, 822270036089110529);
-                //client.EditMessage(259853201359110144, 822270036089110529, "same");
                 Console.WriteLine($"Logged in as: {client.User.Username}#{client.User.Discriminator} | {client.User.Id}");
                 Console.WriteLine($"Guilds: {client.GetGuilds().Count}");
             }

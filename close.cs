@@ -70,7 +70,7 @@ namespace modmailbot
                                     write69.WriteLine("");
                                     write69.WriteLine("--------------------------------");
                                     write69.WriteLine($"Staff Closed: {message.Author.User.Username} ({message.Author.User.Id})");
-                                    write69.WriteLine($"Time: {DateTime.Now.ToString(new CultureInfo("de-DE"))}");
+                                    write69.WriteLine($"Time: {DateTime.Now.ToString(new CultureInfo("en-US"))}"); // language and country where the timestamp should be made
                                     write69.Close();
                                     channel.Delete();
                                     LogChannel.SendFile($"Logs\\{channel.Name}.txt", $"{channel.Name} has been closed by <@!{message.Author.User.Id}>");
